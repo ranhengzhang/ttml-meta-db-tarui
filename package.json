@@ -1,0 +1,35 @@
+{
+  "name": "ttml-meta-db",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "dexie": "^4.0.11",
+    "element-plus": "^2.9.7",
+    "pinia": "^3.0.1",
+    "sass": "^1.86.0",
+    "sass-loader": "^16.0.5",
+    "unplugin-auto-import": "^19.1.1",
+    "unplugin-vue-components": "^28.4.1",
+    "uuid": "^11.1.0",
+    "vue": "^3.5.13",
+    "vue-router": "4",
+    "vuex": "^4.1.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.3",
+    "vue-tsc": "^2.1.10"
+  }
+}
