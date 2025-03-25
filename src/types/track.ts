@@ -1,7 +1,12 @@
-export interface Track {
+import {Entity} from "./entity.ts";
+
+export class Track extends Entity{
     albums: string[];
-    feats: never[]; // 根据实际类型调整
+    feats: string[]; // 根据实际类型调整
     ids: Array<{ key: string; value: string }>;
-    metas: string[];
-    uuid: string;
+
+    constructor(name: string = '') {
+        super();
+        if (name) this.metas.push(name);
+    }
 }

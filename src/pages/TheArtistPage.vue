@@ -1,14 +1,44 @@
 <script setup lang="ts">
-import {computed} from "vue";
-import {useDatabaseStore, useRecentStore} from "../store";
+import {computed, ref, onMounted, onUnmounted} from "vue";
+import {useRecentStore} from "../store";
 import {storeToRefs} from "pinia";
 import MetaList from "../components/MetaList.vue";
+import {db} from "../database";
+import {liveQuery, Subscription} from "dexie";
 
-const database = useDatabaseStore()
+let subscription: Subscription|null = null
+
 const recent = useRecentStore()
-const {artists} = storeToRefs(database)
+const artists = ref(await db.artists.toArray())
 const {artist: selected} = storeToRefs(recent) // 当前选中行
 const selectedArtist = computed(()=>artists?.value[selected.value])
+
+// 初始化实时查询
+onMounted(() => {
+  subscription = liveQuery(() => db.artists.toArray())
+      .subscribe({
+        next: (result) => {
+          artists.value = result
+        },
+      })
+})
+
+// 组件卸载时清理
+onUnmounted(() => {
+  subscription?.unsubscribe()
+})
+
+async function appendArtistMeta(meta: string) {
+  await db.updateArtist(selectedArtist.value?.uuid, {metas: [...selectedArtist.value?.metas, meta]})
+}
+
+async function removeArtistMeta(meta: string) {
+  await db.updateArtist(selectedArtist.value?.uuid, {metas: selectedArtist.value?.metas.filter(v=>v!==meta)})
+}
+
+async function updateArtistMeta(oldMeta: string, newMeta: string) {
+  await db.updateArtist(selectedArtist.value?.uuid, {metas: selectedArtist.value?.metas.map(v=>v===oldMeta?newMeta:v)})
+}
 </script>
 
 <template>
@@ -21,7 +51,7 @@ const selectedArtist = computed(()=>artists?.value[selected.value])
       </el-menu>
     </el-col>
     <el-col :span="14">
-      <meta-list :metas="selectedArtist?.metas"/>
+      <meta-list :metas="selectedArtist?.metas" @append="appendArtistMeta" @remove="removeArtistMeta" @update="updateArtistMeta"/>
     </el-col>
   </el-row>
 </template>

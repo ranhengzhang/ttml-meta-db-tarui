@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { reactive } from "vue";
-import { invoke } from "@tauri-apps/api/core";
 import { ElContainer } from "element-plus"
-import icon_path from "./assets/Stuffed flatbread.png";
+import icon_path from "./assets/Stuffed flatbread.png"
 </script>
 
 <template>
@@ -29,7 +27,9 @@ import icon_path from "./assets/Stuffed flatbread.png";
       </el-menu>
     </el-header>
     <el-main>
-      <router-view/>
+      <Suspense>
+        <router-view/>
+      </Suspense>
     </el-main>
   </el-container>
 </template>

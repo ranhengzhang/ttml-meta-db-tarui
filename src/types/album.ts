@@ -1,6 +1,11 @@
-export interface Album {
-    artists: string[];
-    metas: string[];
-    tracks: string[];
-    uuid: string;
+import {Entity} from "./entity.ts";
+
+export class Album extends Entity{
+    artists: string[] = [];
+    tracks: string[] = [];
+
+    constructor(name: string = '') {
+        super();
+        if (name) this.metas.push(name);
+    }
 }
