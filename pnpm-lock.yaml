@@ -14,9 +14,21 @@ importers:
       '@tauri-apps/api':
         specifier: ^2
         version: 2.4.0
+      '@tauri-apps/plugin-clipboard-manager':
+        specifier: ~2
+        version: 2.2.2
+      '@tauri-apps/plugin-dialog':
+        specifier: ^2.2.1
+        version: 2.2.1
+      '@tauri-apps/plugin-fs':
+        specifier: ^2.2.1
+        version: 2.2.1
       '@tauri-apps/plugin-opener':
         specifier: ^2
         version: 2.2.6
+      '@tauri-apps/plugin-os':
+        specifier: ^2.2.1
+        version: 2.2.1
       dexie:
         specifier: ^4.0.11
         version: 4.0.11
@@ -552,8 +564,20 @@ packages:
     engines: {node: '>= 10'}
     hasBin: true
 
+  '@tauri-apps/plugin-clipboard-manager@2.2.2':
+    resolution: {integrity: sha512-bZvDLMqfcNmsw7Ag8I49jlaCjdpDvvlJHnpp6P+Gg/3xtpSERdwlDxm7cKGbs2mj46dsw4AuG3RoAgcpwgioUA==, tarball: https://registry.npmmirror.com/@tauri-apps/plugin-clipboard-manager/-/plugin-clipboard-manager-2.2.2.tgz}
+
+  '@tauri-apps/plugin-dialog@2.2.1':
+    resolution: {integrity: sha512-wZmCouo4PgTosh/UoejPw9DPs6RllS5Pp3fuOV2JobCu36mR5AXU2MzU9NZiVaFi/5Zfc8RN0IhcZHnksJ1o8A==, tarball: https://registry.npmmirror.com/@tauri-apps/plugin-dialog/-/plugin-dialog-2.2.1.tgz}
+
+  '@tauri-apps/plugin-fs@2.2.1':
+    resolution: {integrity: sha512-KdGzvvA4Eg0Dhw55MwczFbjxLxsTx0FvwwC/0StXlr6IxwPUxh5ziZQoaugkBFs8t+wfebdQrjBEzd8NmmDXNw==, tarball: https://registry.npmmirror.com/@tauri-apps/plugin-fs/-/plugin-fs-2.2.1.tgz}
+
   '@tauri-apps/plugin-opener@2.2.6':
     resolution: {integrity: sha512-bSdkuP71ZQRepPOn8BOEdBKYJQvl6+jb160QtJX/i2H9BF6ZySY/kYljh76N2Ne5fJMQRge7rlKoStYQY5Jq1w==, tarball: https://registry.npmmirror.com/@tauri-apps/plugin-opener/-/plugin-opener-2.2.6.tgz}
+
+  '@tauri-apps/plugin-os@2.2.1':
+    resolution: {integrity: sha512-cNYpNri2CCc6BaNeB6G/mOtLvg8dFyFQyCUdf2y0K8PIAKGEWdEcu8DECkydU2B+oj4OJihDPD2de5K6cbVl9A==, tarball: https://registry.npmmirror.com/@tauri-apps/plugin-os/-/plugin-os-2.2.1.tgz}
 
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==, tarball: https://registry.npmmirror.com/@types/estree/-/estree-1.0.6.tgz}
@@ -1551,7 +1575,23 @@ snapshots:
       '@tauri-apps/cli-win32-ia32-msvc': 2.4.0
       '@tauri-apps/cli-win32-x64-msvc': 2.4.0
 
+  '@tauri-apps/plugin-clipboard-manager@2.2.2':
+    dependencies:
+      '@tauri-apps/api': 2.4.0
+
+  '@tauri-apps/plugin-dialog@2.2.1':
+    dependencies:
+      '@tauri-apps/api': 2.4.0
+
+  '@tauri-apps/plugin-fs@2.2.1':
+    dependencies:
+      '@tauri-apps/api': 2.4.0
+
   '@tauri-apps/plugin-opener@2.2.6':
+    dependencies:
+      '@tauri-apps/api': 2.4.0
+
+  '@tauri-apps/plugin-os@2.2.1':
     dependencies:
       '@tauri-apps/api': 2.4.0
 

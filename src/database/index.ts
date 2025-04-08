@@ -15,55 +15,100 @@ export class MetaDatabase extends Dexie {
         this.version(1).stores({
             artists: 'uuid, albums*, metas*', // 索引数组字段用*
             albums: 'uuid, artists*, tracks*, metas*',
-            tracks: 'uuid, albums*, ids.key*, metas*' // 索引对象数组属性
+            tracks: 'uuid, albums*, ids*, metas*' // 索引对象数组属性
         });
     }
 
-    async appendArtist(name: string) {
-        await this.artists.add(new Artist(name))
-    }
-
-    async updateArtist(artist_uuid: string, options: object) {
-        await this.artists.update(artist_uuid, options)
+    async updateArtist(artist_uuid: string, changes: object) {
+        await this.artists.update(artist_uuid, changes)
     }
 
     async removeArtist(artist_uuid: string) {
-        const artist = await this.artists.get(artist_uuid);
-        artist?.albums.forEach(album_uuid => {
-            this.removeAlbumFromArtist(album_uuid, artist_uuid)
-        })
+        const artist = await this.artists.get(artist_uuid) as Artist
+        for(const album_uuid of artist.albums) {
+            await this.removeAlbumFromArtist(album_uuid, artist_uuid)
+        }
         this.tracks
-            .filter(v=> {
+            .filter(v => {
                 return v.feats.find(v => v === artist_uuid) !== undefined
-            }).toArray().then(l=>{
-                l.forEach(v=>db.tracks.update(v.uuid,{feats: v.feats.filter(v=>v !== artist_uuid)}))
+            }).toArray().then(async l => {
+            await Promise.all(l.map(v => db.tracks.update(v.uuid, {feats: v.feats.filter(v => v !== artist_uuid)})))
         })
         await this.artists.delete(artist_uuid)
     }
 
-    async appendAlbum(name: string) {
-        await this.albums.add(new Album(name))
+    async updateAlbum(album_uuid: string, changes: object) {
+        await this.albums.update(album_uuid, changes)
     }
 
-    async updateAlbum(album_uuid: string, options: object) {
-        await this.albums.update(album_uuid, options)
+    async appendAlbumToArtist(album_uuid: string, artist_uuid: string) {
+        const artist = await this.artists.get(artist_uuid) as Artist;
+        const album = await this.albums.get(album_uuid) as Album;
+
+        await this.artists.update(artist_uuid, {albums: [...artist.albums, album_uuid]})
+        await this.albums.update(album_uuid, {artists: [...album.artists, artist_uuid]})
     }
 
-    async removeAlbum(album_uuid: string) {}
+    async removeAlbumFromArtist(album_uuid: string, artist_uuid: string) {
+        const artist = await this.artists.get(artist_uuid);
+        const album = await this.albums.get(album_uuid);
 
-    async removeAlbumFromArtist(album_uuid: string, artist_uuid: string) {}
+        await this.artists.update(artist_uuid, {albums: artist?.albums.filter(v => v !== album_uuid)})
+        await this.albums.update(album_uuid, {artists: album?.artists.filter(v => v !== artist_uuid)})
 
-    async appendTrack(name: string) {
-        await this.tracks.add(new Track(name))
+        await this.tryRemoveAlbum(album_uuid)
     }
 
-    async updateTrack(track_uuid: string, options: object) {
-        await this.tracks.update(track_uuid, options)
+    async tryRemoveAlbum(album_uuid: string) {
+        const album: Album = await this.albums.get(album_uuid) as Album
+
+        if (album?.artists.length) return
+        for (const v of album?.tracks) {
+            await this.removeTrackFromAlbum(v, album_uuid)
+        }
     }
 
-    async removeTrack(track_uuid: string) {}
+    async updateTrack(track_uuid: string, changes: object) {
+        await this.tracks.update(track_uuid, JSON.parse(JSON.stringify(changes)))
+    }
 
-    async removeTrackFromAlbum(track_uuid: string, album_uuid: string) {}
+    async appendTrackToAlbum(track_uuid: string, album_uuid: string) {
+        const track = await this.tracks.get(track_uuid) as Track;
+        const album = await this.albums.get(album_uuid) as Album;
+
+        await this.tracks.update(track_uuid, {albums: [...track.albums, album_uuid]})
+        await this.albums.update(album_uuid, {tracks: [...album.tracks, track_uuid]})
+    }
+
+    async removeTrackFromAlbum(track_uuid: string, album_uuid: string) {
+        const track = await this.tracks.get(track_uuid) as Track;
+        const album = await this.albums.get(album_uuid) as Album;
+
+        await this.tracks.update(track_uuid, {albums: track.albums.filter(v => v !== album_uuid)})
+        await this.albums.update(album_uuid, {tracks: album.tracks.filter(v => v !== track_uuid)})
+    }
+
+    async appendFeatToTrack(artist_uuid: string, track_uuid: string) {
+        const track = await this.tracks.get(track_uuid) as Track
+
+        await this.tracks.update(track_uuid, {feats: [...track.feats, artist_uuid]})
+    }
+
+    async removeFeatFromTrack(artist_uuid: string, track_uuid: string) {
+        const track = await this.tracks.get(track_uuid) as Track
+
+        await this.tracks.update(track_uuid, {feats: track.feats.filter(v=>v!==artist_uuid)})
+    }
+
+    async copyXml(track_uuid: string) {
+        const track = await this.tracks.get(track_uuid) as Track
+        const albums = await Promise.all(track.albums.map(async u=>await this.albums.get(u)))
+        const artists = [...await Promise.all(track.feats.map(async u=>await this.artists.get(u))), ...await Promise.all([...new Set(albums.flatMap(v=>v?.artists))].map(async u=>await this.artists.get(u)))]
+        const xml = [...track.ids.map(t=>({key:t.key,value:t.value})), ...track.metas.map(v=>({key:'musicName',value:v})), ...albums.flatMap(v=>v?.metas).map(v=>({key:'album',value:v})), ...artists.flatMap(v=>v?.metas).map(v=>({key:'artists',value:v}))]
+        const keys = ['ncmMusicId','qqMusicId','spotifyId','appleMusicId','isrc','musicName','artists','album']
+
+        return keys.flatMap(k=>xml.filter(s=>s.key===k).map(t=>`<amll:meta key="${t.key}" value="${t.value}"/>`)).join("")
+    }
 }
 
 export const db = new MetaDatabase();

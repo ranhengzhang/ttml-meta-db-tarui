@@ -1,6 +1,6 @@
 import {Entity} from "./entity.ts";
 
-export class Album extends Entity{
+export class Album extends Entity {
     artists: string[] = [];
     tracks: string[] = [];
 

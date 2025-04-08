@@ -1,17 +1,26 @@
 <script setup lang="ts">
-import {computed, ref, onMounted, onUnmounted} from "vue";
-import {useRecentStore} from "../store";
+import {computed, ref, onMounted, onUnmounted, watch, Ref, nextTick} from "vue";
+import {useRecentUuidStore, useSelectedIndexStore} from "../store";
 import {storeToRefs} from "pinia";
 import MetaList from "../components/MetaList.vue";
 import {db} from "../database";
 import {liveQuery, Subscription} from "dexie";
+import {Artist} from "../types/artist.ts";
+import EntityList from "../components/EntityList.vue";
 
-let subscription: Subscription|null = null
+let subscription: Subscription | null = null
 
-const recent = useRecentStore()
-const artists = ref(await db.artists.toArray())
-const {artist: selected} = storeToRefs(recent) // 当前选中行
-const selectedArtist = computed(()=>artists?.value[selected.value])
+const selectedIndexStore = useSelectedIndexStore()
+const recentUuidStore = useRecentUuidStore()
+const artists: Ref<Artist[], Artist[]> = ref(await db.artists.toArray())
+const {artist: selectedIndex} = storeToRefs(selectedIndexStore) // 当前选中行
+const {artist: recentArtistUuid} = storeToRefs(recentUuidStore)
+const selectedArtist = computed(() => artists?.value[selectedIndex.value])
+const appendArtist = ref(false)
+const newArtist = ref('')
+const inputRef = ref()
+
+watch(selectedArtist, () => recentArtistUuid.value = selectedArtist.value?.uuid, {immediate: true})
 
 // 初始化实时查询
 onMounted(() => {
@@ -33,25 +42,58 @@ async function appendArtistMeta(meta: string) {
 }
 
 async function removeArtistMeta(meta: string) {
-  await db.updateArtist(selectedArtist.value?.uuid, {metas: selectedArtist.value?.metas.filter(v=>v!==meta)})
+  await db.updateArtist(selectedArtist.value?.uuid, {metas: selectedArtist.value?.metas.filter(v => v !== meta)})
 }
 
 async function updateArtistMeta(oldMeta: string, newMeta: string) {
-  await db.updateArtist(selectedArtist.value?.uuid, {metas: selectedArtist.value?.metas.map(v=>v===oldMeta?newMeta:v)})
+  await db.updateArtist(selectedArtist.value?.uuid, {metas: selectedArtist.value?.metas.map(v => v === oldMeta ? newMeta : v)})
+}
+
+function startAppendArtistFunc(){
+  newArtist.value = ''
+  appendArtist.value = true
+  nextTick(() => {
+    // 添加微任务队列延迟
+    setTimeout(() => inputRef.value?.focus(), 100)
+  })
+}
+
+async function appendArtistFunc() {
+  await db.artists.add(new Artist(newArtist.value))
+  newArtist.value = ''
+  appendArtist.value = false
+}
+
+async function removeArtistFunc(artistUuid: string) {
+  await db.removeArtist(artistUuid)
 }
 </script>
 
 <template>
+  <!-- 「添加」弹窗 -->
+  <el-dialog v-if="appendArtist" v-model="appendArtist" title="添加歌手">
+    <el-row>
+      <el-input ref="inputRef" v-model="newArtist" :class="newArtist.length == 0 ? 'refuse':''" clearable/>
+    </el-row>
+    <template #footer>
+      <el-button type="primary" @click="appendArtistFunc" :disabled="newArtist.length == 0" plain>确认
+      </el-button>
+      <el-button @click="appendArtist = false" type="danger">取消</el-button>
+    </template>
+  </el-dialog>
+
   <el-row class="container">
     <el-col :span="10">
-      <el-menu>
-        <el-menu-item v-for="(indexedArtist, index) in artists" :index="String(index)" @click="selected=index">
-          <el-text size="large">{{indexedArtist?.metas.length ? indexedArtist.metas[0] : indexedArtist.uuid}}</el-text>
-        </el-menu-item>
-      </el-menu>
+      <entity-list
+          :entities="artists"
+          :selected-index="selectedIndex"
+          @on-index-change="v=>selectedIndex=v"
+          @on-append="startAppendArtistFunc"
+          @on-remove="removeArtistFunc"/>
     </el-col>
     <el-col :span="14">
-      <meta-list :metas="selectedArtist?.metas" @append="appendArtistMeta" @remove="removeArtistMeta" @update="updateArtistMeta"/>
+      <meta-list :metas="selectedArtist?.metas" @on-append="appendArtistMeta" @on-remove="removeArtistMeta"
+                 @on-update="updateArtistMeta"/>
     </el-col>
   </el-row>
 </template>
@@ -60,12 +102,10 @@ async function updateArtistMeta(oldMeta: string, newMeta: string) {
 .container {
   height: 100%;
   overflow: auto;
+
   .el-col {
     height: 100%;
     overflow-y: auto;
-    .el-menu--vertical{
-      height: 100%;
-    }
   }
 }
 </style>
