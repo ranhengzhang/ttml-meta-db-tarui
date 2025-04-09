@@ -67,6 +67,14 @@ async function appendArtistFunc() {
 async function removeArtistFunc(artistUuid: string) {
   await db.removeArtist(artistUuid)
 }
+
+async function appendMember(artistUuid: string) {
+  await db.updateArtist(selectedArtist.value?.uuid, {members: [...selectedArtist.value?.members, artistUuid]})
+}
+
+async function removeMember(artistUuid: string) {
+  await db.updateArtist(selectedArtist.value?.uuid, {members: selectedArtist.value?.members.filter(v => v !== artistUuid)})
+}
 </script>
 
 <template>
@@ -91,9 +99,21 @@ async function removeArtistFunc(artistUuid: string) {
           @on-append="startAppendArtistFunc"
           @on-remove="removeArtistFunc"/>
     </el-col>
-    <el-col :span="14">
-      <meta-list :metas="selectedArtist?.metas" @on-append="appendArtistMeta" @on-remove="removeArtistMeta"
-                 @on-update="updateArtistMeta"/>
+    <el-col :span="14" style="display: grid; grid-template-rows: 48% 4% 48%;">
+      <el-row>
+        <artist-list
+            :artists="selectedArtist?.members"
+            @on-append="appendMember"
+            @on-remove="removeMember"/>
+      </el-row>
+      <el-divider/>
+      <el-row>
+        <meta-list
+            :metas="selectedArtist?.metas"
+            @on-append="appendArtistMeta"
+            @on-remove="removeArtistMeta"
+            @on-update="updateArtistMeta"/>
+      </el-row>
     </el-col>
   </el-row>
 </template>
@@ -106,6 +126,15 @@ async function removeArtistFunc(artistUuid: string) {
   .el-col {
     height: 100%;
     overflow-y: auto;
+
+    .el-row {
+      height: 100%;
+      width: 100%;
+
+      #root {
+        width: 100%;
+      }
+    }
   }
 }
 </style>

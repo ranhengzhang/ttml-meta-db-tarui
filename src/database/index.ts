@@ -13,7 +13,7 @@ export class MetaDatabase extends Dexie {
 
         // 定义数据库模式和索引
         this.version(1).stores({
-            artists: 'uuid, albums*, metas*', // 索引数组字段用*
+            artists: 'uuid, albums*, metas*, members*', // 索引数组字段用*
             albums: 'uuid, artists*, tracks*, metas*',
             tracks: 'uuid, albums*, ids*, metas*' // 索引对象数组属性
         });
@@ -102,10 +102,18 @@ export class MetaDatabase extends Dexie {
 
     async copyXml(track_uuid: string) {
         const track = await this.tracks.get(track_uuid) as Track
-        const albums = await Promise.all(track.albums.map(async u=>await this.albums.get(u)))
-        const artists = [...await Promise.all(track.feats.map(async u=>await this.artists.get(u))), ...await Promise.all([...new Set(albums.flatMap(v=>v?.artists))].map(async u=>await this.artists.get(u)))]
-        const xml = [...track.ids.map(t=>({key:t.key,value:t.value})), ...track.metas.map(v=>({key:'musicName',value:v})), ...albums.flatMap(v=>v?.metas).map(v=>({key:'album',value:v})), ...artists.flatMap(v=>v?.metas).map(v=>({key:'artists',value:v}))]
-        const keys = ['ncmMusicId','qqMusicId','spotifyId','appleMusicId','isrc','musicName','artists','album']
+        const albums = await Promise.all(track.albums.map(async u => await this.albums.get(u)))
+        let artists = [...await Promise.all(track.feats.map(async u => await this.artists.get(u))), ...await Promise.all([...new Set(albums.flatMap(v => v?.artists))].map(async u => await this.artists.get(u)))]
+        const members = await Promise.all(artists.flatMap(v => v?.members).map(async v => await this.artists.get(v)))
+        artists = Array.from(new Set([...artists, ...members]))
+        const xml = [...track.ids.map(t => ({key: t.key, value: t.value})), ...track.metas.map(v => ({
+            key: 'musicName',
+            value: v
+        })), ...albums.flatMap(v => v?.metas).map(v => ({
+            key: 'album',
+            value: v
+        })), ...artists.flatMap(v => v?.metas).map(v => ({key: 'artists', value: v}))]
+        const keys = ['ncmMusicId', 'qqMusicId', 'spotifyId', 'appleMusicId', 'isrc', 'musicName', 'artists', 'album']
 
         return keys.flatMap(k=>xml.filter(s=>s.key===k).map(t=>`<amll:meta key="${t.key}" value="${t.value}"/>`)).join("")
     }
