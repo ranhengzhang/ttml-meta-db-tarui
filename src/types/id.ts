@@ -5,6 +5,7 @@ export enum IdType {
     AM = "appleMusicId",
     ISRC = "isrc"
 }
+
 export interface Id {
     key: string
     value: string

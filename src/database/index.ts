@@ -25,7 +25,7 @@ export class MetaDatabase extends Dexie {
 
     async removeArtist(artist_uuid: string) {
         const artist = await this.artists.get(artist_uuid) as Artist
-        for(const album_uuid of artist.albums) {
+        for (const album_uuid of artist.albums) {
             await this.removeAlbumFromArtist(album_uuid, artist_uuid)
         }
         this.tracks
@@ -97,7 +97,7 @@ export class MetaDatabase extends Dexie {
     async removeFeatFromTrack(artist_uuid: string, track_uuid: string) {
         const track = await this.tracks.get(track_uuid) as Track
 
-        await this.tracks.update(track_uuid, {feats: track.feats.filter(v=>v!==artist_uuid)})
+        await this.tracks.update(track_uuid, {feats: track.feats.filter(v => v !== artist_uuid)})
     }
 
     async copyXml(track_uuid: string) {
@@ -115,7 +115,7 @@ export class MetaDatabase extends Dexie {
         })), ...artists.flatMap(v => v?.metas).map(v => ({key: 'artists', value: v}))]
         const keys = ['ncmMusicId', 'qqMusicId', 'spotifyId', 'appleMusicId', 'isrc', 'musicName', 'artists', 'album']
 
-        return keys.flatMap(k=>xml.filter(s=>s.key===k).map(t=>`<amll:meta key="${t.key}" value="${t.value}"/>`)).join("")
+        return keys.flatMap(k => xml.filter(s => s.key === k).map(t => `<amll:meta key="${t.key}" value="${t.value}"/>`)).join("")
     }
 }
 

@@ -7,6 +7,7 @@ import {db} from "../database";
 import {liveQuery, Subscription} from "dexie";
 import {Artist} from "../types/artist.ts";
 import EntityList from "../components/EntityList.vue";
+import ArtistList from "../components/ArtistList.vue";
 
 let subscription: Subscription | null = null
 
@@ -49,7 +50,7 @@ async function updateArtistMeta(oldMeta: string, newMeta: string) {
   await db.updateArtist(selectedArtist.value?.uuid, {metas: selectedArtist.value?.metas.map(v => v === oldMeta ? newMeta : v)})
 }
 
-function startAppendArtistFunc(){
+function startAppendArtistFunc() {
   newArtist.value = ''
   appendArtist.value = true
   nextTick(() => {

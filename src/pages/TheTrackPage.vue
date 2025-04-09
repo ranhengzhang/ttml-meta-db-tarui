@@ -32,11 +32,13 @@ const appendTrack = ref<boolean>(false)
 const newTrack = ref<string>('')
 const inputRef = ref()
 
-const exists = computed(()=>{
-  return newTrack?.value.length == 0 || (tracks.value.filter(v=>v.metas.indexOf(newTrack.value) != -1).length > 0)
+const exists = computed(() => {
+  return newTrack?.value.length == 0 || (tracks.value.filter(v => v.metas.indexOf(newTrack.value) != -1).length > 0)
 })
 
-watch(selectedTrack, () => {recentTrackUuid.value = selectedTrack.value?.uuid}, {immediate: true})
+watch(selectedTrack, () => {
+  recentTrackUuid.value = selectedTrack.value?.uuid
+}, {immediate: true})
 
 watch(recent_album, async () => {
   tracks.value = await db.tracks.where('uuid').anyOf(recent_album?.value.tracks || []).toArray()
@@ -55,7 +57,7 @@ onMounted(() => {
           tracks.value = result
         }
       })
-  album_subscription = liveQuery(async ()=>{
+  album_subscription = liveQuery(async () => {
     return db.albums.get(recentAlbumUuid.value) as PromiseExtended<Album>
   })
       .subscribe({
@@ -115,21 +117,23 @@ async function appendTrackMeta(meta: string) {
 }
 
 async function removeTrackMeta(meta: string) {
-  await db.updateTrack(selectedTrack.value?.uuid, {metas: selectedTrack.value?.metas.filter(v=>v!==meta)})
+  await db.updateTrack(selectedTrack.value?.uuid, {metas: selectedTrack.value?.metas.filter(v => v !== meta)})
 }
 
 async function updateTrackMeta(oldMeta: string, newMeta: string) {
-  await db.updateTrack(selectedTrack.value?.uuid, {metas: selectedTrack.value?.metas.map(v=>v === oldMeta ? newMeta : v)})
+  await db.updateTrack(selectedTrack.value?.uuid, {metas: selectedTrack.value?.metas.map(v => v === oldMeta ? newMeta : v)})
 }
 
-async function appendIdFunc(id: Id){
+async function appendIdFunc(id: Id) {
   await db.updateTrack(selectedTrack.value?.uuid, {ids: [...selectedTrack.value?.ids, id]})
 }
-async function removeIdFunc(id: Id){
-  await db.updateTrack(selectedTrack.value?.uuid, {ids: selectedTrack.value?.ids.filter(v=>v.key!==id.key&&v.value!==id.value)})
+
+async function removeIdFunc(id: Id) {
+  await db.updateTrack(selectedTrack.value?.uuid, {ids: selectedTrack.value?.ids.filter(v => v.key !== id.key && v.value !== id.value)})
 }
-async function updateIdFunc(oldId: Id, newId: Id){
-  await db.updateTrack(selectedTrack.value?.uuid, {ids: selectedTrack.value?.ids.map(v=>v.key===oldId.key&&v.value===oldId.value?newId:v)})
+
+async function updateIdFunc(oldId: Id, newId: Id) {
+  await db.updateTrack(selectedTrack.value?.uuid, {ids: selectedTrack.value?.ids.map(v => v.key === oldId.key && v.value === oldId.value ? newId : v)})
 }
 
 async function copyXml() {
@@ -218,6 +222,7 @@ async function copyXml() {
 
   .el-col > .el-row {
     width: 100%;
+
     .el-menu {
       width: 100%;
       border-right: none;
@@ -228,6 +233,7 @@ async function copyXml() {
 #meta {
   .el-row {
     width: 100%;
+
     #root {
       width: 100%;
     }

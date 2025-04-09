@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {ElContainer} from "element-plus"
-import icon_path from "./assets/Stuffed flatbread.png"
+import icon_path from "./assets/Falafel.png"
 import {MoonNight, Sunrise} from "@element-plus/icons-vue";
 import {open, save} from "@tauri-apps/plugin-dialog";
-import { path } from "@tauri-apps/api";
-import { platform } from "@tauri-apps/plugin-os";
+import {path} from "@tauri-apps/api";
+import {platform} from "@tauri-apps/plugin-os";
 import {readTextFile, writeTextFile} from "@tauri-apps/plugin-fs";
 import {db} from "./database";
 
@@ -72,9 +72,9 @@ async function write() {
 
       // 构建导出数据结构
       return {
-        artists: artists.map(a => ({ ...a })), // 创建纯对象副本
-        albums: albums.map(a => ({ ...a })),
-        tracks: tracks.map(t => ({ ...t }))
+        artists: artists.map(a => ({...a})), // 创建纯对象副本
+        albums: albums.map(a => ({...a})),
+        tracks: tracks.map(t => ({...t}))
       };
     });
 

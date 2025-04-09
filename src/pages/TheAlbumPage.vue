@@ -26,11 +26,13 @@ const appendAlbum = ref<boolean>(false)
 const newAlbum = ref<string>('')
 const inputRef = ref()
 
-const exists = computed(()=>{
-  return newAlbum?.value.length == 0 || (albums.value.filter(v=>v.metas.indexOf(newAlbum.value) != -1).length > 0)
+const exists = computed(() => {
+  return newAlbum?.value.length == 0 || (albums.value.filter(v => v.metas.indexOf(newAlbum.value) != -1).length > 0)
 })
 
-watch(selectedAlbum, () => {recentAlbumUuid.value = selectedAlbum.value?.uuid}, {immediate: true})
+watch(selectedAlbum, () => {
+  recentAlbumUuid.value = selectedAlbum.value?.uuid
+}, {immediate: true})
 
 watch(recent_artist, async () => {
   albums.value = await db.albums.where('uuid').anyOf(recent_artist?.value.albums || []).toArray()
@@ -49,7 +51,7 @@ onMounted(() => {
           albums.value = result
         }
       })
-  artist_subscription = liveQuery(async ()=>{
+  artist_subscription = liveQuery(async () => {
     return db.artists.get(recentArtistUuid.value) as PromiseExtended<Artist>
   })
       .subscribe({

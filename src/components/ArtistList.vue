@@ -7,7 +7,9 @@ import {Artist} from "../types/artist.ts";
 const props = defineProps({
   artists: {
     type: Array<string>,
-    default (){return[]}
+    default() {
+      return []
+    }
   }
 })
 const emit = defineEmits(['onAppend', 'onRemove'])
@@ -42,7 +44,8 @@ function appendArtistFunc() {
         </el-select>
       </el-row>
       <template #footer>
-        <el-button type="primary" @click="appendArtistFunc" :disabled="!newArtist || artist_uuid_list.indexOf(newArtist.uuid) != -1" plain>确认
+        <el-button type="primary" @click="appendArtistFunc"
+                   :disabled="!newArtist || artist_uuid_list.indexOf(newArtist.uuid) != -1" plain>确认
         </el-button>
         <el-button @click="appendArtist = false" type="danger">取消</el-button>
       </template>

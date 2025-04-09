@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    ttml_meta_db_lib::run()
+    ttml_meta_db_tauri_lib::run()
 }

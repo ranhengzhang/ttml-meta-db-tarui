@@ -11,12 +11,18 @@ const {entities, selectedIndex} = toRefs(props)
     <el-scrollbar>
       <el-menu-item v-for="(indexedEntity, index) in entities" :key="indexedEntity.uuid" :index="String(index)"
                     @click="emit('onIndexChange', index)">
-        <el-text size="large" tag="b">{{ indexedEntity?.metas.length ? indexedEntity.metas[0] : indexedEntity.uuid }}</el-text>
+        <el-text size="large" tag="b">{{
+            indexedEntity?.metas.length ? indexedEntity.metas[0] : indexedEntity.uuid
+          }}
+        </el-text>
       </el-menu-item>
       <el-row class="buttons">
-      <el-button style="width: 100%; padding: 10px 15px" type="danger" @click="emit('onRemove', entities[selectedIndex].uuid)" plain>-</el-button>
-      <el-button style="width: 100%; padding: 10px 15px" type="primary" @click="emit('onAppend')" plain>+</el-button>
-      </el-row></el-scrollbar>
+        <el-button style="width: 100%; padding: 10px 15px" type="danger"
+                   @click="emit('onRemove', entities[selectedIndex].uuid)" plain>-
+        </el-button>
+        <el-button style="width: 100%; padding: 10px 15px" type="primary" @click="emit('onAppend')" plain>+</el-button>
+      </el-row>
+    </el-scrollbar>
   </el-menu>
 </template>
 
@@ -32,8 +38,9 @@ const {entities, selectedIndex} = toRefs(props)
   position: sticky;
   bottom: 0;
   grid-template-columns: 1fr 1fr;
-   .el-button {
-     margin: 0;
-   }
+
+  .el-button {
+    margin: 0;
+  }
 }
 </style>

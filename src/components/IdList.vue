@@ -11,13 +11,13 @@ const props = defineProps({
 const {ids} = toRefs(props)
 const appendId = ref<boolean>(false) // 是否显示「添加」对话框
 const updateId = ref<boolean>(false) // 是否显示修改对话框
-const newId = ref<Id>({ key: '', value: '' }) // 添加的值
+const newId = ref<Id>({key: '', value: ''}) // 添加的值
 const exists = ref<boolean>(false) // 要添加的值是否已经存在
 let recent = -1
 const inputRef = ref<InstanceType<typeof ElInput>>() // 更明确的类型声明
 
 watch(newId, () => {
-  exists.value = (ids?.value?.some(id=>id.value===newId.value?.value&&id.key===newId.value?.key) as boolean)
+  exists.value = (ids?.value?.some(id => id.value === newId.value?.value && id.key === newId.value?.key) as boolean)
 }, {deep: true})
 
 function startAppendIdFunc() {
@@ -73,7 +73,8 @@ function updateIdFunc() {
         </el-row>
       </el-tooltip>
       <template #footer>
-        <el-button type="primary" @click="appendIdFunc" :disabled="newId.key.length == 0 || newId.value.length == 0 || exists" plain>确认
+        <el-button type="primary" @click="appendIdFunc"
+                   :disabled="newId.key.length == 0 || newId.value.length == 0 || exists" plain>确认
         </el-button>
         <el-button @click="appendId = false" type="danger">取消</el-button>
       </template>

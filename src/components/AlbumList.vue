@@ -7,7 +7,9 @@ import {Album} from "../types/album.ts";
 const props = defineProps({
   albums: {
     type: Array<string>,
-    default (){return[]}
+    default() {
+      return []
+    }
   }
 })
 const emit = defineEmits(['onAppend', 'onRemove'])
@@ -42,7 +44,8 @@ function appendAlbumFunc() {
         </el-select>
       </el-row>
       <template #footer>
-        <el-button type="primary" @click="appendAlbumFunc" :disabled="!newAlbum || album_uuid_list.indexOf(newAlbum.uuid) != -1" plain>确认
+        <el-button type="primary" @click="appendAlbumFunc"
+                   :disabled="!newAlbum || album_uuid_list.indexOf(newAlbum.uuid) != -1" plain>确认
         </el-button>
         <el-button @click="appendAlbum = false" type="danger">取消</el-button>
       </template>

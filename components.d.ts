@@ -10,7 +10,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     AlbumList: typeof import('./src/components/AlbumList.vue')['default']
     ArtistList: typeof import('./src/components/ArtistList.vue')['default']
-    ElAffix: typeof import('element-plus/es')['ElAffix']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
@@ -19,7 +18,6 @@ declare module 'vue' {
     ElDivider: typeof import('element-plus/es')['ElDivider']
     ElHeader: typeof import('element-plus/es')['ElHeader']
     ElIcon: typeof import('element-plus/es')['ElIcon']
-    ElImage: typeof import('element-plus/es')['ElImage']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElMenu: typeof import('element-plus/es')['ElMenu']
@@ -35,10 +33,8 @@ declare module 'vue' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     EntityList: typeof import('./src/components/EntityList.vue')['default']
     IdList: typeof import('./src/components/IdList.vue')['default']
-    IDList: typeof import('./src/components/IDList.vue')['default']
     MetaList: typeof import('./src/components/MetaList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    TheArtistPage: typeof import('./src/pages/TheArtistPage.vue')['default']
   }
 }
