@@ -6,7 +6,7 @@ import IdList from "../components/IdList.vue";
 import AlbumList from "../components/AlbumList.vue";
 import {liveQuery, PromiseExtended, Subscription} from "dexie";
 import {useRecentUuidStore, useSelectedIndexStore} from "../store";
-import {computed, nextTick, onMounted, onUnmounted, Ref, ref, watch} from "vue";
+import {computed, h, nextTick, onMounted, onUnmounted, Ref, ref, watch} from "vue";
 import {db} from "../database";
 import {Album} from "../types/album.ts";
 import {storeToRefs} from "pinia";
@@ -140,7 +140,13 @@ async function copyXml() {
   const xml: string = await db.copyXml(selectedTrack.value?.uuid)
   // 将内容写到剪贴板
   await writeText(xml);
-  ElMessage(`${selectedTrack.value?.uuid} - ${selectedTrack.value?.metas.join(' \ ')}`)
+  ElMessage({
+    message: h('p', null, [
+      h('code', null, `${selectedTrack.value?.uuid}`),
+      h('span', null, ` - ${selectedTrack.value?.metas.join(' \ ')}`)
+    ]),
+    type: 'success'
+  })
 }
 </script>
 

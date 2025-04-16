@@ -155,6 +155,14 @@ body, html, #app {
     text-overflow: ellipsis;
   }
 }
+
+.el-message {
+  font-family: "Manrope Medium","vivo Sans Medium", sans-serif;
+
+  code {
+    font-family: "SF Mono", monospace;
+  }
+}
 </style>
 
 <style lang="scss" scoped>
